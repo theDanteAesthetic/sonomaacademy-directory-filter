@@ -8,34 +8,43 @@
 // @description 3/5/2024, 3:21:36 PM
 // ==/UserScript==
 
+let search;
+let directoryElement = document.querySelector("#content_1903384");
 let searchStaff = function(){
-    const getStaff = document.querySelectorAll('img.link-image:not(img.link-image.link-hover-image):not(img.link-image.link-nohover-image)');
-    const staffFilter = getStaff.filter(filters);
-    console.log(staffFilter);
+    let getStaff = document.querySelectorAll('img.link-image:not(img.link-image.link-nohover-image, img.link-image.link-hover-image)');
+    return getStaff;
 }
-
 let searchbox = function(){
-    let directoryElement = document.querySelector("#content_1903384");
-    let search = document.createElement("input");
+    search = document.createElement("input");
     search.setAttribute("type", "text");
-    search.setAttribute("placeholder", "seach staff");
+    search.setAttribute("placeholder", "Search Staff");
     directoryElement.prepend(search);
-    search.addEventListener("input", () => {console.log(search.value)});
+    search.addEventListener("input",() => {
+        filterStaff(searchStaff())});
 }
-let filters = function(a){
-    return a[0];
+let filterStaff = function(array){
+    let returnStaff = [];
+    let staffName;
+    for(let i = 0; i<array.length;i++){
+        array[i].parentNode.parentNode.style.display="grid";
+        array[i].parentNode.parentNode.parentNode.style.gridTemplateColumns = "20% 20% 20% 20% 20%";
+    }
+    for(let i = 0; i < array.length; i++){
+        staffName = array[i].getAttribute('alt').toLowerCase();
+        let searchValue = search.value.toLowerCase();
+        if(staffName.includes(searchValue)){
+            returnStaff.push(array[i]);
+        } else {
+            console.log(array[i]);
+            array[i].parentNode.parentNode.style.display="none";
+        }
+    }
+    return returnStaff;
 }
 
 let init = function(){
-    let directoryElement = document.querySelector("#content_1903384");
-    let p = document.createElement("p");
-    p.innerHTML = "Hello Dingus!";
-    p.style.color = "red";
-    p.style.fontWeight = "bold";
-    p.style.fontSize = "36px";
-    directoryElement.prepend(p);
-    //searchStaff();
     searchbox();
-  }
-  
-  window.addEventListener("load", init);
+    filterStaff(searchStaff());
+}
+
+window.addEventListener("load", init);
